@@ -1,0 +1,16 @@
+<form [formGroup]="form" novalidate class="space-y-4" (ngSubmit)="doSave()">
+  <div>
+    <div class="relative">
+      <input
+        formControlName="title"
+        placeholder="Enter title"
+        type="text"
+        class="w-full rounded bg-gray-100 border-gray-300 border-2"
+      />
+
+    </div>
+  </div>
+  <div>
+    <app-btn typeBtn="submit" color="success">Create</app-btn>
+  </div>
+</form>
