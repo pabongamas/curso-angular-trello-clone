@@ -182,7 +182,7 @@ class="z-50 my-4 w-60 text-base list-none bg-white rounded divide-y divide-gray-
   </button>
 </div>
 <div class="py-3 px-4 flex justify-between">
-  <app-board-form></app-board-form>
+  <app-board-form (closeOverlay)="close($event)"></app-board-form>
 </div>
 </div>
 </ng-template>

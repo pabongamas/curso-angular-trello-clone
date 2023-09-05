@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import {
   CdkDragDrop,
   moveItemInArray,
@@ -12,6 +13,7 @@ import { BoardsService } from '@services/boards.service';
 import { CardsService } from '@services/cards.service';
 import { Board } from '@models/board.model';
 import { Card } from '@models/card.model';
+import { List } from '@models/list.model';
 
 @Component({
   selector: 'app-board',
@@ -29,6 +31,11 @@ import { Card } from '@models/card.model';
 })
 export class BoardComponent implements OnInit {
   board: Board | null = null;
+  showCardForm = false;
+  inputCard = new FormControl<string>('', {
+    nonNullable: true,
+    validators: [Validators.required]
+  });
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -43,7 +50,8 @@ export class BoardComponent implements OnInit {
     private dialog: Dialog,
     private route: ActivatedRoute,
     private boardsService: BoardsService,
-    private cardsService:CardsService
+    private cardsService: CardsService,
+    private formBuilder: FormBuilder
   ) {}
 
   drop(event: CdkDragDrop<Card[]>) {
@@ -66,8 +74,8 @@ export class BoardComponent implements OnInit {
       event.currentIndex
     );
     const card = event.container.data[event.currentIndex];
-    const listId=event.container.id;
-    this.updateCard(card,position,listId);
+    const listId = event.container.id;
+    this.updateCard(card, position, listId);
   }
 
   addColumn() {
@@ -96,10 +104,35 @@ export class BoardComponent implements OnInit {
       this.board = board;
     });
   }
-  private updateCard(card:Card,position:number,listId:number|string){
-    this.cardsService.update(card.id,{position,listId})
-    .subscribe((cardUpdated)=>{
-      console.log(cardUpdated);
-    })
+  private updateCard(card: Card, position: number, listId: number | string) {
+    this.cardsService
+      .update(card.id, { position, listId })
+      .subscribe((cardUpdated) => {
+        console.log(cardUpdated);
+      });
+  }
+  openFormCard(list: List) {
+    // list.showCardForm=!list.showCardForm
+    if (this.board?.lists) {
+      this.board.lists = this.board.lists.map((iteratorList) => {
+        if (iteratorList.id === list.id) {
+          return {
+            ...iteratorList,
+            showCardForm: true,
+          };
+        }
+        return {
+          ...iteratorList,
+          showCardForm: false,
+        };
+      });
+    }
+  }
+  createCard(){
+    const title=this.inputCard.value;
+    console.log(title);
+  }
+  closeCardForm(list:List){
+    list.showCardForm=false;
   }
 }

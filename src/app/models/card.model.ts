@@ -5,7 +5,20 @@ export interface Card{
     title:string;
     position:number;
     list:List;
-    description:string;
+    description?:string;
+}
+// dto manual
+// export interface CreateCardDto{
+//   title:string;
+//   position:number;
+//   description?:string;
+//   listId:string;
+//   boardId:string;
+// }
+// se extiende de card y se añaden dos argunments mas
+export interface CreateCardDto extends Omit<Card,'id' |'list'>{
+  listId:string|number;
+  boardId:string;
 }
 
 export interface UpdateCardDto{
