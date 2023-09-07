@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import {
@@ -15,6 +15,7 @@ import {ListsService} from '@services/lists.service';
 import { Board } from '@models/board.model';
 import { Card } from '@models/card.model';
 import { List } from '@models/list.model';
+import { BACKGROUNDS } from '@models/color.model';
 
 @Component({
   selector: 'app-board',
@@ -30,7 +31,7 @@ import { List } from '@models/list.model';
     `,
   ],
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit,OnDestroy {
   board: Board | null = null;
   showCardForm = false;
   inputCard = new FormControl<string>('', {
@@ -42,6 +43,7 @@ export class BoardComponent implements OnInit {
     validators: [Validators.required]
   });
   showListForm=false;
+  colorBackgrounds=BACKGROUNDS;
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -50,6 +52,9 @@ export class BoardComponent implements OnInit {
         this.getBoard(id);
       }
     });
+  }
+  ngOnDestroy(): void {
+    this.boardsService.setBackgroundColor('sky');
   }
 
   constructor(
@@ -121,6 +126,7 @@ export class BoardComponent implements OnInit {
   private getBoard(id: string) {
     this.boardsService.getBoard(id).subscribe((board) => {
       this.board = board;
+      this.boardsService.setBackgroundColor(this.board.backgroundColor);
     });
   }
   private updateCard(card: Card, position: number, listId: number | string) {
@@ -165,5 +171,13 @@ export class BoardComponent implements OnInit {
   }
   closeCardForm(list:List){
     list.showCardForm=false;
+  }
+
+  get colors(){
+    if(this.board){
+      const classes=this.colorBackgrounds[this.board.backgroundColor];
+      return classes?classes:{};
+    }
+    return {};
   }
 }
